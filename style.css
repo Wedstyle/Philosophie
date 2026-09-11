@@ -3769,3 +3769,7 @@ header {
     font-size: 1.5rem;
   }
 }
+/* Cache définitivement le lien Canaux de la navbar */
+nav.principale li a[href="canaux.html"] {
+  display: none !important;
+}

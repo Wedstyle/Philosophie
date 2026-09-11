@@ -446,6 +446,8 @@ async function majBadgeMentions() {
 }
 
 async function installerBadgeMentions(profil) {
+  return; // 🔕 Badge de mentions désactivé temporairement (canaux fermés)
+
   if (!window.SithAuth.estMembre(profil)) return;
   const slot = document.querySelector(".nav-auth-slot");
   if (!slot || slot.querySelector("#badge-mentions-btn")) return;
@@ -547,6 +549,19 @@ async function injecterLienNavbar() {
 /* ==== Protection des pages ==== */
 async function protegerPage() {
   const body = document.body;
+
+  // Page désactivée temporairement
+  if (body.dataset.pageDesactivee !== undefined) {
+    document.body.innerHTML = `
+      <div class="page-refus">
+        <h1>Page indisponible</h1>
+        <p>Les canaux de discussion sont temporairement fermés.<br>
+        Revenez plus tard.</p>
+        <a href="index.html" class="btn primary">← Retour à l'accueil</a>
+      </div>`;
+    return false;
+  }
+
   if (!body.dataset.pageProtegee) return true;
 
   const s = await window.SithAuth.session();
