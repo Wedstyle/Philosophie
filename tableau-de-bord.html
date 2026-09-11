@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tableau de bord — Codex Philosophie Sith</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body id="top" data-page-protegee data-page-admin>
+    <header>
+      <h1>Codex Philosophie Sith</h1>
+      <p>Héritage · Tradition · Puissance</p>
+    </header>
+
+    <nav class="principale">
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="le-code-sith.html">Le Code Sith</a></li>
+        <li><a href="les-sith.html">Les Sith</a></li>
+        <li><a href="la-philosophie-sith.html">Philosophie</a></li>
+        <li><a href="les-cristaux-kyber.html">Cristaux Kyber</a></li>
+        <li><a href="les-epreuves-dascension.html">Épreuves</a></li>
+        <li><a href="traditions-ancestrales.html">Traditions</a></li>
+        <li><a href="reglement-academique.html">Règlement</a></li>
+        <li><a href="registre-des-sanctions.html">Sanctions</a></li>
+        <li><a href="nouvelle-sanction.html">Émettre</a></li>
+        <li>
+          <a href="tableau-de-bord.html" class="active">Tableau de bord</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="breadcrumb">
+      <a href="index.html">Accueil</a>
+      <span class="sep">›</span>
+      <span class="actuel">Tableau de bord</span>
+    </div>
+
+    <main class="simple">
+      <article>
+        <h2>Tableau de bord</h2>
+
+        <div class="separateur">
+          <span class="sep-ligne"></span>
+          <svg class="sep-ornement" viewBox="0 0 32 32" aria-hidden="true">
+            <polygon
+              points="16,4 28,16 16,28 4,16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <polygon points="16,11 21,16 16,21 11,16" fill="currentColor" />
+          </svg>
+          <span class="sep-ligne"></span>
+        </div>
+
+        <p>
+          Gérez les membres de la Philosophie et validez les inscriptions en
+          attente. Seuls les administrateurs ont accès à cette page.
+        </p>
+
+        <div id="dashboard-contenu">
+          <p style="text-align: center; color: #666; font-style: italic">
+            Chargement…
+          </p>
+        </div>
+      </article>
+    </main>
+
+    <a href="#top" class="retour-haut" aria-label="Retour en haut">↑</a>
+
+    <footer>Codex Philosophie Sith — Document sujet à modification</footer>
+
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -6,7 +6,6 @@ const SUPABASE_URL = "https://idizdchswmvijfoofuiy.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkaXpkY2hzd212aWpmb29mdWl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkxMzYyMTEsImV4cCI6MjEwNDcxMjIxMX0.TupNcgTT5NQCAq3JHJ9xYvmfQAjn5smNeQNz8ZsIAmM";
 
-/* Chargement dynamique du SDK Supabase */
 let _supabaseChargee = null;
 function chargerSupabase() {
   if (_supabaseChargee) return _supabaseChargee;
@@ -20,7 +19,6 @@ function chargerSupabase() {
   return _supabaseChargee;
 }
 
-/* Client Supabase (initialisé à la demande) */
 let _client = null;
 async function client() {
   if (_client) return _client;
@@ -29,7 +27,6 @@ async function client() {
   return _client;
 }
 
-/* Transforme un pseudo en email interne */
 function pseudoVersEmail(pseudo) {
   const clean = pseudo
     .toLowerCase()
@@ -39,7 +36,6 @@ function pseudoVersEmail(pseudo) {
   return `${clean}@membres.codex-sith.fr`;
 }
 
-/* ==== API exposée globalement ==== */
 window.SithAuth = {
   async supabase() {
     return await client();
@@ -53,21 +49,14 @@ window.SithAuth = {
 
   async profil() {
     const s = await this.session();
-    if (!s) {
-      console.log("[profil] Pas de session");
-      return null;
-    }
+    if (!s) return null;
     const c = await client();
     const { data, error } = await c
       .from("profils")
       .select("*")
       .eq("id", s.user.id)
       .single();
-    if (error) {
-      console.error("[profil] Erreur requête:", error);
-      return null;
-    }
-    console.log("[profil] Chargé avec succès :", data);
+    if (error) return null;
     return data;
   },
 
@@ -84,9 +73,8 @@ window.SithAuth = {
       options: { data: { pseudo: pseudo.trim() } },
     });
     if (error) {
-      if (/already registered/i.test(error.message)) {
+      if (/already registered/i.test(error.message))
         throw new Error("Ce pseudo est déjà utilisé.");
-      }
       throw new Error(error.message);
     }
     return data;
@@ -100,9 +88,8 @@ window.SithAuth = {
       password: motDePasse,
     });
     if (error) {
-      if (/invalid login/i.test(error.message)) {
+      if (/invalid login/i.test(error.message))
         throw new Error("Pseudo ou mot de passe incorrect.");
-      }
       throw new Error(error.message);
     }
     return data;
@@ -114,35 +101,83 @@ window.SithAuth = {
     window.location.href = "index.html";
   },
 
-  /* Raccourcis de rôle */
+  /* Rôles */
   estMembre(profil) {
-    return profil && (profil.role === "membre" || profil.role === "haut_grade");
+    return (
+      profil &&
+      (profil.role === "membre" ||
+        profil.role === "haut_grade" ||
+        profil.role === "administrateur")
+    );
   },
   estHautGrade(profil) {
-    return profil && profil.role === "haut_grade";
+    return (
+      profil &&
+      (profil.role === "haut_grade" || profil.role === "administrateur")
+    );
+  },
+  estAdmin(profil) {
+    return profil && profil.role === "administrateur";
+  },
+  estBanni(profil) {
+    return profil && profil.role === "banni";
+  },
+
+  /* Gestion des profils (admin uniquement) */
+  async listerProfils() {
+    const c = await client();
+    const { data, error } = await c
+      .from("profils")
+      .select("*")
+      .order("cree_le", { ascending: false });
+    if (error) throw new Error(error.message);
+    return data || [];
+  },
+
+  async changerRole(id, nouveauRole) {
+    const c = await client();
+    const { error } = await c
+      .from("profils")
+      .update({ role: nouveauRole })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
   },
 };
 
-/* ==== Cacher / montrer les liens réservés aux membres ==== */
-function cacherLiensMembres() {
-  const selecteurs = ['a[href="nouvelle-sanction.html"]'];
-  selecteurs.forEach((sel) => {
-    document.querySelectorAll("nav.principale " + sel).forEach((a) => {
-      const li = a.closest("li");
-      if (li) li.classList.add("lien-membre-cache");
+/* ==== Cacher / révéler les liens selon le rôle ==== */
+function cacherLiensSelonRole() {
+  document
+    .querySelectorAll('nav.principale a[href="nouvelle-sanction.html"]')
+    .forEach((a) => {
+      a.closest("li")?.classList.add("lien-membre-cache");
     });
-  });
 }
 
 function revelerLiensMembres() {
   document
-    .querySelectorAll("nav.principale .lien-membre-cache")
-    .forEach((li) => {
-      li.classList.remove("lien-membre-cache");
-    });
+    .querySelectorAll("nav.principale li.lien-membre-cache")
+    .forEach((li) => li.classList.remove("lien-membre-cache"));
 }
 
-/* ==== Injection du lien dans la navbar ==== */
+/* ==== Injection du lien Tableau de bord dans le header ==== */
+function injecterLienAdminHeader(profil) {
+  if (!window.SithAuth.estAdmin(profil)) return;
+  const header = document.querySelector("header");
+  if (!header) return;
+  if (header.querySelector(".lien-admin-header")) return;
+
+  const pageActuelle = location.pathname.split("/").pop() || "index.html";
+  const estSurDashboard = pageActuelle === "tableau-de-bord.html";
+
+  const lien = document.createElement("a");
+  lien.href = "tableau-de-bord.html";
+  lien.className = "lien-admin-header" + (estSurDashboard ? " actif" : "");
+  lien.innerHTML = "⚙ Tableau de bord";
+  lien.title = "Tableau de bord administrateur";
+  header.appendChild(lien);
+}
+
+/* ==== Injection du lien auth dans la navbar ==== */
 async function injecterLienNavbar() {
   const navUl = document.querySelector("nav.principale ul");
   if (!navUl) return;
@@ -152,10 +187,7 @@ async function injecterLienNavbar() {
   navUl.appendChild(li);
 
   const s = await window.SithAuth.session();
-  console.log("[navbar] Session active ?", !!s);
   const profil = s ? await window.SithAuth.profil() : null;
-  console.log("[navbar] Profil reçu :", profil);
-  console.log("[navbar] Est membre ?", window.SithAuth.estMembre(profil));
 
   if (profil) {
     li.classList.add("nav-auth-connecte");
@@ -167,9 +199,8 @@ async function injecterLienNavbar() {
       window.SithAuth.deconnexion(),
     );
 
-    if (window.SithAuth.estMembre(profil)) {
-      revelerLiensMembres();
-    }
+    if (window.SithAuth.estMembre(profil)) revelerLiensMembres();
+    injecterLienAdminHeader(profil);
   } else {
     li.innerHTML = `<a href="connexion.html" class="nav-auth">🔒 Membres</a>`;
   }
@@ -189,6 +220,32 @@ async function protegerPage() {
     return false;
   }
   const profil = await window.SithAuth.profil();
+
+  // Banni → message spécifique
+  if (window.SithAuth.estBanni(profil)) {
+    document.body.innerHTML = `
+      <div class="page-refus">
+        <h1>Accès révoqué</h1>
+        <p>Votre accès à la Philosophie Sith a été révoqué.<br>
+        Si vous pensez qu'il s'agit d'une erreur, contactez un administrateur.</p>
+        <a href="index.html" class="btn primary">← Retour à l'accueil</a>
+        <a href="#" class="btn discret" onclick="window.SithAuth.deconnexion();return false;">Se déconnecter</a>
+      </div>`;
+    return false;
+  }
+
+  // Page admin
+  if (body.dataset.pageAdmin && !window.SithAuth.estAdmin(profil)) {
+    document.body.innerHTML = `
+      <div class="page-refus">
+        <h1>Accès refusé</h1>
+        <p>Cette page est réservée aux administrateurs de la Philosophie.</p>
+        <a href="index.html" class="btn primary">← Retour à l'accueil</a>
+      </div>`;
+    return false;
+  }
+
+  // Page membre
   if (!window.SithAuth.estMembre(profil)) {
     document.body.innerHTML = `
       <div class="page-refus">
@@ -289,14 +346,11 @@ function initPageConnexion() {
 /* ==== Boot ==== */
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    cacherLiensMembres();
-
+    cacherLiensSelonRole();
     const autorise = await protegerPage();
     if (!autorise) return;
-
     await injecterLienNavbar();
     initPageConnexion();
-
     window.dispatchEvent(new CustomEvent("sith-auth-pret"));
   } catch (err) {
     console.error("[auth]", err);

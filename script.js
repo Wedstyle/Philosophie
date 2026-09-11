@@ -331,6 +331,174 @@ Preuves préalables : ${d.preuves}`;
     afficherListePage();
   }
 
+  /* === Page Tableau de bord (administrateur) === */
+  const dashboard = document.getElementById("dashboard-contenu");
+  if (dashboard) {
+    function formaterDateInscription(iso) {
+      if (!iso) return "—";
+      const d = new Date(iso);
+      return d.toLocaleDateString("fr-FR");
+    }
+
+    const LIBELLE_ROLE = {
+      en_attente: "En attente",
+      membre: "Membre",
+      haut_grade: "Haut gradé",
+      administrateur: "Administrateur",
+      banni: "Exclu",
+    };
+
+    function ligneProfil(p, moiId) {
+      const estMoi = p.id === moiId;
+      const dateInscr = formaterDateInscription(p.cree_le);
+      let actions = "";
+
+      if (estMoi) {
+        actions = '<span class="dashboard-vous">Vous-même</span>';
+      } else if (p.role === "en_attente") {
+        actions = `
+          <button class="btn btn-valider" data-action="set-membre" data-id="${p.id}" data-pseudo="${p.pseudo}">✓ Accepter membre</button>
+          <button class="btn btn-promouvoir" data-action="set-haut-grade" data-id="${p.id}" data-pseudo="${p.pseudo}">⚔ Haut gradé</button>
+          <button class="btn btn-admin" data-action="set-administrateur" data-id="${p.id}" data-pseudo="${p.pseudo}">★ Admin</button>
+          <button class="btn btn-exclure" data-action="set-banni" data-id="${p.id}" data-pseudo="${p.pseudo}">✗ Refuser</button>
+        `;
+      } else if (p.role === "membre") {
+        actions = `
+          <button class="btn btn-promouvoir" data-action="set-haut-grade" data-id="${p.id}" data-pseudo="${p.pseudo}">⚔ Haut gradé</button>
+          <button class="btn btn-admin" data-action="set-administrateur" data-id="${p.id}" data-pseudo="${p.pseudo}">★ Admin</button>
+          <button class="btn discret" data-action="set-en-attente" data-id="${p.id}" data-pseudo="${p.pseudo}">↓ Attente</button>
+          <button class="btn btn-exclure" data-action="set-banni" data-id="${p.id}" data-pseudo="${p.pseudo}">⛔ Exclure</button>
+        `;
+      } else if (p.role === "haut_grade") {
+        actions = `
+          <button class="btn btn-admin" data-action="set-administrateur" data-id="${p.id}" data-pseudo="${p.pseudo}">★ Admin</button>
+          <button class="btn discret" data-action="set-membre" data-id="${p.id}" data-pseudo="${p.pseudo}">↓ Membre</button>
+          <button class="btn btn-exclure" data-action="set-banni" data-id="${p.id}" data-pseudo="${p.pseudo}">⛔ Exclure</button>
+        `;
+      } else if (p.role === "administrateur") {
+        actions = `
+          <button class="btn discret" data-action="set-haut-grade" data-id="${p.id}" data-pseudo="${p.pseudo}">↓ Haut gradé</button>
+          <button class="btn btn-exclure" data-action="set-banni" data-id="${p.id}" data-pseudo="${p.pseudo}">⛔ Exclure</button>
+        `;
+      } else if (p.role === "banni") {
+        actions = `
+          <button class="btn btn-valider" data-action="set-en-attente" data-id="${p.id}" data-pseudo="${p.pseudo}">↻ Réintégrer</button>
+        `;
+      }
+
+      return `
+        <li class="dashboard-item" data-role="${p.role}">
+          <div class="info">
+            <div class="pseudo">${echapper(p.pseudo)}</div>
+            <div class="meta">${LIBELLE_ROLE[p.role] || p.role} · Inscrit le ${dateInscr}</div>
+          </div>
+          <div class="actions">${actions}</div>
+        </li>
+      `;
+    }
+
+    async function afficherDashboard() {
+      dashboard.innerHTML =
+        '<p style="text-align:center;color:#666;font-style:italic;">Chargement…</p>';
+
+      const moi = await window.SithAuth.profil();
+      if (!window.SithAuth.estAdmin(moi)) {
+        dashboard.innerHTML =
+          '<p style="text-align:center;color:#c41e1e;">Accès réservé aux administrateurs.</p>';
+        return;
+      }
+
+      let liste;
+      try {
+        liste = await window.SithAuth.listerProfils();
+      } catch (err) {
+        dashboard.innerHTML = `<p style="text-align:center;color:#c41e1e;">Erreur : ${echapper(err.message)}</p>`;
+        return;
+      }
+
+      const enAttente = liste.filter((p) => p.role === "en_attente");
+      const membres = liste.filter((p) => p.role === "membre");
+      const hauts = liste.filter((p) => p.role === "haut_grade");
+      const admins = liste.filter((p) => p.role === "administrateur");
+      const bannis = liste.filter((p) => p.role === "banni");
+
+      function blocSection(titre, tableau, classe = "") {
+        const contenu =
+          tableau.length === 0
+            ? '<div class="dashboard-vide">Aucun membre dans cette catégorie.</div>'
+            : `<ul class="dashboard-liste">${tableau.map((p) => ligneProfil(p, moi.id)).join("")}</ul>`;
+        return `
+          <section class="dashboard-section ${classe}">
+            <h3>
+              <span>${titre}</span>
+              <span class="compteur">${tableau.length}</span>
+            </h3>
+            ${contenu}
+          </section>
+        `;
+      }
+
+      dashboard.innerHTML = `
+        ${blocSection("Inscriptions en attente", enAttente, "section-attente")}
+        ${blocSection("Membres de la Philosophie", membres)}
+        ${blocSection("Hauts gradés", hauts)}
+        ${blocSection("Administrateurs", admins, "section-admin")}
+        ${blocSection("Membres exclus", bannis, "section-bannis")}
+      `;
+
+      dashboard.querySelectorAll("button[data-action]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const action = btn.getAttribute("data-action");
+          const id = btn.getAttribute("data-id");
+          const pseudo = btn.getAttribute("data-pseudo");
+          let nouveauRole, titre, message, labelValider;
+
+          if (action === "set-membre") {
+            nouveauRole = "membre";
+            titre = "Accorder le rang de Membre ?";
+            message = `${pseudo} pourra consulter le registre des sanctions et en émettre.`;
+            labelValider = "Accepter";
+          } else if (action === "set-haut-grade") {
+            nouveauRole = "haut_grade";
+            titre = "Promouvoir haut gradé ?";
+            message = `${pseudo} pourra également supprimer des sanctions.`;
+            labelValider = "Promouvoir";
+          } else if (action === "set-administrateur") {
+            nouveauRole = "administrateur";
+            titre = "Promouvoir administrateur ?";
+            message = `${pseudo} pourra tout faire, y compris gérer les rôles des autres membres.`;
+            labelValider = "Promouvoir";
+          } else if (action === "set-en-attente") {
+            nouveauRole = "en_attente";
+            titre = "Remettre en attente ?";
+            message = `${pseudo} n'aura plus accès au registre ni à l'émission de sanctions tant qu'il n'est pas revalidé.`;
+            labelValider = "Confirmer";
+          } else if (action === "set-banni") {
+            nouveauRole = "banni";
+            titre = "Exclure ce membre ?";
+            message = `${pseudo} n'aura plus aucun accès au site. Son compte pourra être réintégré plus tard si nécessaire.`;
+            labelValider = "Exclure";
+          }
+
+          const ok = await modaleConfirmation(message, {
+            titre,
+            valider: labelValider,
+          });
+          if (!ok) return;
+
+          try {
+            await window.SithAuth.changerRole(id, nouveauRole);
+            afficherDashboard();
+          } catch (err) {
+            alert("Erreur : " + err.message);
+          }
+        });
+      });
+    }
+
+    afficherDashboard();
+  }
+
   /* === Modale de confirmation personnalisée === */
   function modaleConfirmation(message, options = {}) {
     return new Promise((resolve) => {

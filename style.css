@@ -1251,3 +1251,109 @@ footer {
 nav.principale li.lien-membre-cache {
   display: none !important;
 }
+/* --- Lien admin caché --- */
+nav.principale li.lien-admin-cache {
+  display: none !important;
+}
+
+/* --- Section admin --- */
+.dashboard-item[data-role="administrateur"] {
+  border-left-color: #b8860b;
+  background: linear-gradient(90deg, #150e02 0%, #0d0d0d 100%);
+}
+
+.section-admin > h3 {
+  color: #d9a520 !important;
+}
+
+.btn-admin {
+  background: #6b5000;
+  border-color: #b8860b;
+  color: #ffd97a;
+}
+.btn-admin:hover {
+  background: #b8860b;
+  color: #fff;
+  box-shadow: 0 0 14px rgba(184, 134, 11, 0.5);
+}
+/* --- Lien Tableau de bord dans le header --- */
+header {
+  position: relative;
+}
+
+.lien-admin-header {
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 0.72rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 0.55rem 1.1rem;
+  background: linear-gradient(135deg, #6b5000 0%, #b8860b 100%);
+  color: #0a0a0a;
+  border: 1px solid #d9a520;
+  border-radius: 2px;
+  text-decoration: none;
+  transition: all 0.2s;
+  box-shadow: 0 0 15px rgba(184, 134, 11, 0.3);
+  z-index: 10;
+}
+
+.lien-admin-header:hover {
+  background: linear-gradient(135deg, #b8860b 0%, #d9a520 100%);
+  color: #000;
+  box-shadow: 0 0 22px rgba(184, 134, 11, 0.65);
+  transform: translateY(-1px);
+}
+
+.lien-admin-header.actif {
+  background: linear-gradient(135deg, #b8860b 0%, #ffd97a 100%);
+  box-shadow: 0 0 25px rgba(184, 134, 11, 0.8);
+}
+
+@media (max-width: 700px) {
+  .lien-admin-header {
+    top: auto;
+    bottom: 0.5rem;
+    right: 0.5rem;
+    font-size: 0.62rem;
+    padding: 0.4rem 0.75rem;
+  }
+}
+/* --- Bouton exclure --- */
+.btn-exclure {
+  background: #3a0808;
+  border-color: #6b0000;
+  color: #ff8888;
+}
+.btn-exclure:hover {
+  background: #8b0000;
+  color: #fff;
+  box-shadow: 0 0 14px rgba(139, 0, 0, 0.6);
+}
+
+/* --- Section bannis --- */
+.section-bannis > h3 {
+  color: #8b0000 !important;
+}
+
+.dashboard-item[data-role="banni"] {
+  border-left-color: #3a0808;
+  background: linear-gradient(90deg, #100303 0%, #0d0d0d 100%);
+  opacity: 0.7;
+}
+
+.dashboard-item[data-role="banni"] .pseudo {
+  color: #666;
+  text-decoration: line-through;
+  text-decoration-color: rgba(196, 30, 30, 0.5);
+}
+
+.dashboard-item[data-role="banni"] .meta {
+  color: #4a4a4a;
+}
