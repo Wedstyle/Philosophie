@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Émettre une Sanction — Codex Philosophie Sith</title>
+    <meta
+      name="description"
+      content="Formulaire d'émission d'une sanction au sein de l'Ordre Sith."
+    />
+    <meta
+      property="og:title"
+      content="Émettre une Sanction — Codex Philosophie Sith"
+    />
+    <meta
+      property="og:description"
+      content="Registre des sanctions de l'Ordre Sith."
+    />
+    <meta property="og:image" content="og-image.png" />
+    <meta property="og:site_name" content="Codex Philosophie Sith" />
+    <meta property="og:type" content="article" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="og-image.png" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body id="top" data-page-protegee>
+    <header>
+      <h1>Codex Philosophie Sith</h1>
+      <p>Héritage · Tradition · Puissance</p>
+    </header>
+
+    <nav class="principale">
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="le-code-sith.html">Le Code Sith</a></li>
+        <li><a href="les-sith.html">Les Sith</a></li>
+        <li><a href="la-philosophie-sith.html">Philosophie</a></li>
+        <li><a href="les-cristaux-kyber.html">Cristaux Kyber</a></li>
+        <li><a href="les-epreuves-dascension.html">Épreuves</a></li>
+        <li><a href="traditions-ancestrales.html">Traditions</a></li>
+        <li><a href="reglement-academique.html">Règlement</a></li>
+        <li><a href="registre-des-sanctions.html">Sanctions</a></li>
+        <li><a href="nouvelle-sanction.html" class="active">Émettre</a></li>
+      </ul>
+    </nav>
+
+    <div class="breadcrumb">
+      <a href="index.html">Accueil</a>
+      <span class="sep">›</span>
+      <a href="registre-des-sanctions.html">Sanctions</a>
+      <span class="sep">›</span>
+      <span class="actuel">Émettre une sanction</span>
+    </div>
+
+    <div class="bandeau-registre" id="bandeau-registre" hidden>
+      <span class="bandeau-icone">📜</span>
+      <span class="bandeau-texte" id="bandeau-texte"></span>
+      <a href="registre-local.html" class="bandeau-lien"
+        >Consulter le registre →</a
+      >
+    </div>
+
+    <main class="simple">
+      <article>
+        <h2>Émettre une Sanction</h2>
+
+        <div class="separateur">
+          <span class="sep-ligne"></span>
+          <svg class="sep-ornement" viewBox="0 0 32 32" aria-hidden="true">
+            <polygon
+              points="16,4 28,16 16,28 4,16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <polygon points="16,11 21,16 16,21 11,16" fill="currentColor" />
+          </svg>
+          <span class="sep-ligne"></span>
+        </div>
+
+        <p>
+          Remplissez le formulaire ci-dessous. L'aperçu se met à jour en temps
+          réel. Vous pouvez enregistrer la sanction ou la copier sous forme de
+          texte.
+        </p>
+
+        <form class="form-sanction" id="form-sanction" onsubmit="return false;">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="s-date">Date de la sanction</label>
+              <input type="date" id="s-date" />
+            </div>
+
+            <div class="form-group">
+              <label for="s-niveau">Niveau de la sanction</label>
+              <select id="s-niveau">
+                <option value="1">Niveau 1 — Avertissement / Réprimande</option>
+                <option value="2">
+                  Niveau 2 — Amende (10 000 cr.) / Torture
+                </option>
+                <option value="3">
+                  Niveau 3 — Amende (40 000 cr.) / Exécution publique
+                </option>
+                <option value="4">
+                  Niveau 4 — Exécution irrévocable / Exil du nom
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="s-nom-emetteur">Nom du membre émetteur</label>
+              <input
+                type="text"
+                id="s-nom-emetteur"
+                placeholder="Ex : Erugoth"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="s-nom-cible">Nom de l'individu sanctionné</label>
+              <input type="text" id="s-nom-cible" placeholder="Ex : Ocha Daz" />
+            </div>
+
+            <div class="form-group">
+              <label for="s-type">Type de sanction</label>
+              <select id="s-type">
+                <option value="">— Sélectionner —</option>
+                <option>Avertissement officiel</option>
+                <option>Rappel à l'ordre</option>
+                <option>Blâme public</option>
+                <option>Amende</option>
+                <option>Torture</option>
+                <option>Emprisonnement</option>
+                <option>Intervention d'autorité</option>
+                <option>Exécution publique</option>
+                <option>Exil du nom</option>
+                <option>Kaggath approuvé</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="s-precision"
+                >Précision sur la sanction (optionnel)</label
+              >
+              <input
+                type="text"
+                id="s-precision"
+                placeholder="Ex : intervention de l'Émissaire du Dark Lythor"
+              />
+            </div>
+
+            <div class="form-group full">
+              <label for="s-motif">Motif</label>
+              <textarea
+                id="s-motif"
+                placeholder="Décris le motif de la sanction…"
+              ></textarea>
+            </div>
+
+            <div class="form-group full">
+              <label for="s-preuves">Preuves préalables</label>
+              <textarea
+                id="s-preuves"
+                placeholder="Ex : Pris en flagrant délit par la Philosophie et les Lois."
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn primary" id="btn-sauver">
+              💾 Enregistrer
+            </button>
+            <button type="button" class="btn" id="btn-copier">
+              📋 Copier le texte
+            </button>
+            <button type="button" class="btn discret" id="btn-reset">
+              ↻ Réinitialiser
+            </button>
+          </div>
+        </form>
+
+        <div class="apercu-titre">Aperçu de la sanction</div>
+
+        <div class="carte-sanction" id="preview-sanction">
+          <!-- rempli en JS -->
+        </div>
+
+        <div class="lien-registre">
+          <a href="registre-local.html" class="btn primary"
+            >📜 Voir le registre local →</a
+          >
+        </div>
+      </article>
+    </main>
+
+    <a href="#top" class="retour-haut" aria-label="Retour en haut">↑</a>
+
+    <footer>Codex Philosophie Sith — Document sujet à modification</footer>
+
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

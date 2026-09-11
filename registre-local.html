@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registre Local — Codex Philosophie Sith</title>
+    <meta
+      name="description"
+      content="Registre local des sanctions émises au sein de l'Ordre Sith."
+    />
+    <meta
+      property="og:title"
+      content="Registre Local — Codex Philosophie Sith"
+    />
+    <meta
+      property="og:description"
+      content="Toutes les sanctions enregistrées localement."
+    />
+    <meta property="og:image" content="og-image.png" />
+    <meta property="og:site_name" content="Codex Philosophie Sith" />
+    <meta property="og:type" content="article" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="og-image.png" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body id="top" data-page-protegee>
+    <header>
+      <h1>Codex Philosophie Sith</h1>
+      <p>Héritage · Tradition · Puissance</p>
+    </header>
+
+    <nav class="principale">
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="le-code-sith.html">Le Code Sith</a></li>
+        <li><a href="les-sith.html">Les Sith</a></li>
+        <li><a href="la-philosophie-sith.html">Philosophie</a></li>
+        <li><a href="les-cristaux-kyber.html">Cristaux Kyber</a></li>
+        <li><a href="les-epreuves-dascension.html">Épreuves</a></li>
+        <li><a href="traditions-ancestrales.html">Traditions</a></li>
+        <li><a href="reglement-academique.html">Règlement</a></li>
+        <li><a href="registre-des-sanctions.html">Sanctions</a></li>
+        <li><a href="nouvelle-sanction.html">Émettre</a></li>
+      </ul>
+    </nav>
+
+    <div class="breadcrumb">
+      <a href="index.html">Accueil</a>
+      <span class="sep">›</span>
+      <a href="registre-des-sanctions.html">Sanctions</a>
+      <span class="sep">›</span>
+      <span class="actuel">Registre local</span>
+    </div>
+
+    <main class="simple">
+      <article>
+        <h2>Registre Local des Sanctions</h2>
+
+        <div class="separateur">
+          <span class="sep-ligne"></span>
+          <svg class="sep-ornement" viewBox="0 0 32 32" aria-hidden="true">
+            <polygon
+              points="16,4 28,16 16,28 4,16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <polygon points="16,11 21,16 16,21 11,16" fill="currentColor" />
+          </svg>
+          <span class="sep-ligne"></span>
+        </div>
+
+        <p>
+          Retrouvez ici toutes les sanctions que vous avez enregistrées depuis
+          cet appareil. Pour supprimer une sanction, cliquez sur la croix
+          <strong>×</strong> en haut à droite de la carte concernée.
+        </p>
+
+        <div class="lien-registre">
+          <a href="nouvelle-sanction.html" class="btn primary"
+            >+ Émettre une nouvelle sanction</a
+          >
+        </div>
+
+        <div id="liste-sanctions-page"><!-- rempli en JS --></div>
+      </article>
+    </main>
+
+    <a href="#top" class="retour-haut" aria-label="Retour en haut">↑</a>
+
+    <footer>Codex Philosophie Sith — Document sujet à modification</footer>
+
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
