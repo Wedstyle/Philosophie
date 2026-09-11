@@ -1408,3 +1408,15 @@ header {
   border: 1px dashed #333;
   border-radius: 2px;
 }
+/* --- Banni dans la navbar --- */
+.nav-banni-label {
+  color: #8b0000;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid #6b0000;
+  border-radius: 2px;
+  background: rgba(139, 0, 0, 0.15);
+}

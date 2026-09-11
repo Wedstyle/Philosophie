@@ -202,21 +202,36 @@ async function injecterLienNavbar() {
   const s = await window.SithAuth.session();
   const profil = s ? await window.SithAuth.profil() : null;
 
-  if (profil) {
-    li.classList.add("nav-auth-connecte");
+  if (!profil) {
+    li.innerHTML = `<a href="connexion.html" class="nav-auth">🔒 Membres</a>`;
+    return;
+  }
+
+  // Cas particulier : utilisateur banni
+  if (window.SithAuth.estBanni(profil)) {
+    li.classList.add("nav-auth-banni");
     li.innerHTML = `
-      <a href="registre-local.html" class="nav-auth">⚔ ${profil.pseudo}</a>
+      <span class="nav-banni-label">⛔ Accès révoqué</span>
       <button type="button" class="nav-logout" title="Déconnexion" aria-label="Déconnexion">⏻</button>
     `;
     li.querySelector(".nav-logout").addEventListener("click", () =>
       window.SithAuth.deconnexion(),
     );
-
-    if (window.SithAuth.estMembre(profil)) revelerLiensMembres();
-    injecterLienAdminHeader(profil);
-  } else {
-    li.innerHTML = `<a href="connexion.html" class="nav-auth">🔒 Membres</a>`;
+    return;
   }
+
+  // Cas normal
+  li.classList.add("nav-auth-connecte");
+  li.innerHTML = `
+    <a href="registre-local.html" class="nav-auth">⚔ ${profil.pseudo}</a>
+    <button type="button" class="nav-logout" title="Déconnexion" aria-label="Déconnexion">⏻</button>
+  `;
+  li.querySelector(".nav-logout").addEventListener("click", () =>
+    window.SithAuth.deconnexion(),
+  );
+
+  if (window.SithAuth.estMembre(profil)) revelerLiensMembres();
+  injecterLienAdminHeader(profil);
 }
 
 /* ==== Protection des pages ==== */
