@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Canaux de Discussion — Codex Philosophie Sith</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body id="top" data-page-protegee>
+    <header>
+      <h1>Codex Philosophie Sith</h1>
+      <p>Héritage · Tradition · Puissance</p>
+    </header>
+
+    <nav class="principale">
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="le-code-sith.html">Le Code Sith</a></li>
+        <li><a href="les-sith.html">Les Sith</a></li>
+        <li><a href="la-philosophie-sith.html">Philosophie</a></li>
+        <li><a href="les-cristaux-kyber.html">Cristaux Kyber</a></li>
+        <li><a href="les-epreuves-dascension.html">Épreuves</a></li>
+        <li><a href="traditions-ancestrales.html">Traditions</a></li>
+        <li><a href="reglement-academique.html">Règlement</a></li>
+        <li><a href="registre-des-sanctions.html">Sanctions</a></li>
+        <li><a href="nouvelle-sanction.html">Émettre</a></li>
+        <li><a href="canaux.html" class="active">Canaux</a></li>
+      </ul>
+    </nav>
+
+    <div class="breadcrumb">
+      <a href="index.html">Accueil</a>
+      <span class="sep">›</span>
+      <span class="actuel">Canaux de Discussion</span>
+    </div>
+
+    <main class="chat-page">
+      <div class="chat-layout">
+        <aside class="chat-sidebar">
+          <div class="chat-sidebar-titre">
+            <span>💬</span>
+            <span>Sphère de la Philosophie</span>
+          </div>
+          <ul class="chat-canaux" id="liste-canaux">
+            <li class="chat-vide">Chargement…</li>
+          </ul>
+        </aside>
+
+        <section class="chat-principal">
+          <header class="chat-entete">
+            <div>
+              <h2 id="canal-nom">Sélectionne un canal</h2>
+              <p id="canal-desc"></p>
+            </div>
+          </header>
+
+          <div class="chat-epingles" id="chat-epingles" hidden>
+            <button
+              type="button"
+              class="chat-epingles-titre"
+              id="chat-epingles-toggle"
+            >
+              <span class="chat-epingles-icone">📌</span>
+              <span>Messages épinglés</span>
+              <span class="chat-epingles-compteur" id="chat-epingles-count"
+                >0</span
+              >
+              <span class="chat-epingles-chevron" id="chat-epingles-chevron"
+                >▾</span
+              >
+            </button>
+            <div class="chat-epingles-liste" id="chat-epingles-liste"></div>
+          </div>
+
+          <div class="chat-messages" id="chat-messages">
+            <div class="chat-placeholder">Choisis un canal pour commencer.</div>
+          </div>
+
+          <form class="chat-form" id="chat-form" autocomplete="off">
+            <div class="chat-reply-preview" id="chat-reply-preview" hidden>
+              <span class="chat-reply-preview-icon">↩</span>
+              <div class="chat-reply-preview-content">
+                <div
+                  class="chat-reply-preview-auteur"
+                  id="chat-reply-preview-auteur"
+                ></div>
+                <div
+                  class="chat-reply-preview-extrait"
+                  id="chat-reply-preview-extrait"
+                ></div>
+              </div>
+              <button
+                type="button"
+                class="chat-reply-preview-close"
+                id="chat-reply-close"
+                aria-label="Annuler la réponse"
+              >
+                ×
+              </button>
+            </div>
+            <div class="chat-form-champs">
+              <textarea
+                id="chat-input"
+                placeholder="Écris ton message… (Entrée = nouvelle ligne)"
+                maxlength="2000"
+                rows="1"
+                disabled
+              ></textarea>
+              <button type="submit" disabled>Envoyer</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <a href="#top" class="retour-haut" aria-label="Retour en haut">↑</a>
+
+    <footer>Codex Philosophie Sith — Document sujet à modification</footer>
+
+    <script src="auth.js"></script>
+    <script src="chat.js"></script>
+  </body>
+</html>
