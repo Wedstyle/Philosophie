@@ -107,23 +107,30 @@ window.SithAuth = {
       profil &&
       (profil.role === "membre" ||
         profil.role === "haut_grade" ||
-        profil.role === "administrateur")
+        profil.role === "administrateur" ||
+        profil.role === "gerant")
     );
   },
   estHautGrade(profil) {
     return (
       profil &&
-      (profil.role === "haut_grade" || profil.role === "administrateur")
+      (profil.role === "haut_grade" ||
+        profil.role === "administrateur" ||
+        profil.role === "gerant")
     );
   },
   estAdmin(profil) {
-    return profil && profil.role === "administrateur";
+    return (
+      profil && (profil.role === "administrateur" || profil.role === "gerant")
+    );
+  },
+  estGerant(profil) {
+    return profil && profil.role === "gerant";
   },
   estBanni(profil) {
     return profil && profil.role === "banni";
   },
 
-  /* Gestion des profils (admin uniquement) */
   async listerProfils() {
     const c = await client();
     const { data, error } = await c
@@ -168,12 +175,18 @@ function injecterLienAdminHeader(profil) {
 
   const pageActuelle = location.pathname.split("/").pop() || "index.html";
   const estSurDashboard = pageActuelle === "tableau-de-bord.html";
+  const estGerant = window.SithAuth.estGerant(profil);
 
   const lien = document.createElement("a");
   lien.href = "tableau-de-bord.html";
-  lien.className = "lien-admin-header" + (estSurDashboard ? " actif" : "");
-  lien.innerHTML = "⚙ Tableau de bord";
-  lien.title = "Tableau de bord administrateur";
+  lien.className =
+    "lien-admin-header" +
+    (estSurDashboard ? " actif" : "") +
+    (estGerant ? " gerant" : "");
+  lien.innerHTML = estGerant ? "👑 Tableau de bord" : "⚙ Tableau de bord";
+  lien.title = estGerant
+    ? "Tableau de bord — Gérant"
+    : "Tableau de bord administrateur";
   header.appendChild(lien);
 }
 
@@ -221,7 +234,6 @@ async function protegerPage() {
   }
   const profil = await window.SithAuth.profil();
 
-  // Banni → message spécifique
   if (window.SithAuth.estBanni(profil)) {
     document.body.innerHTML = `
       <div class="page-refus">
@@ -234,7 +246,6 @@ async function protegerPage() {
     return false;
   }
 
-  // Page admin
   if (body.dataset.pageAdmin && !window.SithAuth.estAdmin(profil)) {
     document.body.innerHTML = `
       <div class="page-refus">
@@ -245,7 +256,6 @@ async function protegerPage() {
     return false;
   }
 
-  // Page membre
   if (!window.SithAuth.estMembre(profil)) {
     document.body.innerHTML = `
       <div class="page-refus">

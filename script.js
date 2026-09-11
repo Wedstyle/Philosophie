@@ -331,7 +331,7 @@ Preuves préalables : ${d.preuves}`;
     afficherListePage();
   }
 
-  /* === Page Tableau de bord (administrateur) === */
+  /* === Page Tableau de bord (administrateur / gérant) === */
   const dashboard = document.getElementById("dashboard-contenu");
   if (dashboard) {
     function formaterDateInscription(iso) {
@@ -345,39 +345,75 @@ Preuves préalables : ${d.preuves}`;
       membre: "Membre",
       haut_grade: "Haut gradé",
       administrateur: "Administrateur",
+      gerant: "Gérant",
       banni: "Exclu",
     };
 
-    function ligneProfil(p, moiId) {
+    function ligneProfil(p, moiId, moiRole) {
       const estMoi = p.id === moiId;
+      const moiEstGerant = moiRole === "gerant";
+      const cibleEstGerant = p.role === "gerant";
+      const cibleEstAdmin = p.role === "administrateur";
       const dateInscr = formaterDateInscription(p.cree_le);
       let actions = "";
 
       if (estMoi) {
         actions = '<span class="dashboard-vous">Vous-même</span>';
+      } else if (!moiEstGerant && (cibleEstAdmin || cibleEstGerant)) {
+        // Un admin ne peut pas toucher un admin ou un gérant
+        actions = '<span class="dashboard-protege">🔒 Protégé</span>';
       } else if (p.role === "en_attente") {
         actions = `
           <button class="btn btn-valider" data-action="set-membre" data-id="${p.id}" data-pseudo="${p.pseudo}">✓ Accepter membre</button>
           <button class="btn btn-promouvoir" data-action="set-haut-grade" data-id="${p.id}" data-pseudo="${p.pseudo}">⚔ Haut gradé</button>
-          <button class="btn btn-admin" data-action="set-administrateur" data-id="${p.id}" data-pseudo="${p.pseudo}">★ Admin</button>
+          ${
+            moiEstGerant
+              ? `
+            <button class="btn btn-admin" data-action="set-administrateur" data-id="${p.id}" data-pseudo="${p.pseudo}">★ Admin</button>
+            <button class="btn btn-gerant" data-action="set-gerant" data-id="${p.id}" data-pseudo="${p.pseudo}">👑 Gérant</button>
+          `
+              : ""
+          }
           <button class="btn btn-exclure" data-action="set-banni" data-id="${p.id}" data-pseudo="${p.pseudo}">✗ Refuser</button>
         `;
       } else if (p.role === "membre") {
         actions = `
           <button class="btn btn-promouvoir" data-action="set-haut-grade" data-id="${p.id}" data-pseudo="${p.pseudo}">⚔ Haut gradé</button>
-          <button class="btn btn-admin" data-action="set-administrateur" data-id="${p.id}" data-pseudo="${p.pseudo}">★ Admin</button>
+          ${
+            moiEstGerant
+              ? `
+            <button class="btn btn-admin" data-action="set-administrateur" data-id="${p.id}" data-pseudo="${p.pseudo}">★ Admin</button>
+            <button class="btn btn-gerant" data-action="set-gerant" data-id="${p.id}" data-pseudo="${p.pseudo}">👑 Gérant</button>
+          `
+              : ""
+          }
           <button class="btn discret" data-action="set-en-attente" data-id="${p.id}" data-pseudo="${p.pseudo}">↓ Attente</button>
           <button class="btn btn-exclure" data-action="set-banni" data-id="${p.id}" data-pseudo="${p.pseudo}">⛔ Exclure</button>
         `;
       } else if (p.role === "haut_grade") {
         actions = `
-          <button class="btn btn-admin" data-action="set-administrateur" data-id="${p.id}" data-pseudo="${p.pseudo}">★ Admin</button>
+          ${
+            moiEstGerant
+              ? `
+            <button class="btn btn-admin" data-action="set-administrateur" data-id="${p.id}" data-pseudo="${p.pseudo}">★ Admin</button>
+            <button class="btn btn-gerant" data-action="set-gerant" data-id="${p.id}" data-pseudo="${p.pseudo}">👑 Gérant</button>
+          `
+              : ""
+          }
           <button class="btn discret" data-action="set-membre" data-id="${p.id}" data-pseudo="${p.pseudo}">↓ Membre</button>
           <button class="btn btn-exclure" data-action="set-banni" data-id="${p.id}" data-pseudo="${p.pseudo}">⛔ Exclure</button>
         `;
       } else if (p.role === "administrateur") {
+        // Forcément gérant ici (sinon on serait dans le cas protégé)
         actions = `
+          <button class="btn btn-gerant" data-action="set-gerant" data-id="${p.id}" data-pseudo="${p.pseudo}">👑 Gérant</button>
           <button class="btn discret" data-action="set-haut-grade" data-id="${p.id}" data-pseudo="${p.pseudo}">↓ Haut gradé</button>
+          <button class="btn btn-exclure" data-action="set-banni" data-id="${p.id}" data-pseudo="${p.pseudo}">⛔ Exclure</button>
+        `;
+      } else if (p.role === "gerant") {
+        // Forcément un autre gérant
+        actions = `
+          <button class="btn discret" data-action="set-administrateur" data-id="${p.id}" data-pseudo="${p.pseudo}">↓ Admin</button>
           <button class="btn btn-exclure" data-action="set-banni" data-id="${p.id}" data-pseudo="${p.pseudo}">⛔ Exclure</button>
         `;
       } else if (p.role === "banni") {
@@ -416,17 +452,18 @@ Preuves préalables : ${d.preuves}`;
         return;
       }
 
-      const enAttente = liste.filter((p) => p.role === "en_attente");
-      const membres = liste.filter((p) => p.role === "membre");
-      const hauts = liste.filter((p) => p.role === "haut_grade");
+      const gerants = liste.filter((p) => p.role === "gerant");
       const admins = liste.filter((p) => p.role === "administrateur");
+      const hauts = liste.filter((p) => p.role === "haut_grade");
+      const membres = liste.filter((p) => p.role === "membre");
+      const enAttente = liste.filter((p) => p.role === "en_attente");
       const bannis = liste.filter((p) => p.role === "banni");
 
       function blocSection(titre, tableau, classe = "") {
         const contenu =
           tableau.length === 0
             ? '<div class="dashboard-vide">Aucun membre dans cette catégorie.</div>'
-            : `<ul class="dashboard-liste">${tableau.map((p) => ligneProfil(p, moi.id)).join("")}</ul>`;
+            : `<ul class="dashboard-liste">${tableau.map((p) => ligneProfil(p, moi.id, moi.role)).join("")}</ul>`;
         return `
           <section class="dashboard-section ${classe}">
             <h3>
@@ -443,6 +480,7 @@ Preuves préalables : ${d.preuves}`;
         ${blocSection("Membres de la Philosophie", membres)}
         ${blocSection("Hauts gradés", hauts)}
         ${blocSection("Administrateurs", admins, "section-admin")}
+        ${blocSection("Gérants", gerants, "section-gerant")}
         ${blocSection("Membres exclus", bannis, "section-bannis")}
       `;
 
@@ -466,8 +504,13 @@ Preuves préalables : ${d.preuves}`;
           } else if (action === "set-administrateur") {
             nouveauRole = "administrateur";
             titre = "Promouvoir administrateur ?";
-            message = `${pseudo} pourra tout faire, y compris gérer les rôles des autres membres.`;
+            message = `${pseudo} pourra gérer les membres, mais pas les autres administrateurs ni les gérants.`;
             labelValider = "Promouvoir";
+          } else if (action === "set-gerant") {
+            nouveauRole = "gerant";
+            titre = "Promouvoir Gérant ?";
+            message = `${pseudo} aura un pouvoir absolu : gestion des admins, gérants, et de tous les membres. À n'accorder qu'aux personnes de confiance absolue.`;
+            labelValider = "Nommer Gérant";
           } else if (action === "set-en-attente") {
             nouveauRole = "en_attente";
             titre = "Remettre en attente ?";
